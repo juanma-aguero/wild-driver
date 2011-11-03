@@ -28,7 +28,7 @@ function preloader(){
 
 	// set image list
 	var images = new Array();
-	images['ship']="images/spaceship.png";
+	images['ship']="images/cars.png";
 	images['fireball']="images/fireball.png";
 	images['rock']="images/rock.png";
 	images['rock-explosion']="images/rock-explosion.png";
@@ -88,19 +88,19 @@ $(document).keydown(function(e){
 
 function startGame(){
 	if(!gameRunning){
-		$('#space').pan({fps: 30, speed: 3, dir: 'down', depth: 10});
+		//$('#space').pan({fps: 30, speed: 3, dir: 'down', depth: 10});
 		gameRunning = true;
 		gameInstance.init();
 		
 	}else{
-		$('#space').spStart();
+		//$('#space').spStart();
 		gameInstance.startLoop();
 	}
-	//soundBuffer['backMusic'].play();
+	soundBuffer['backMusic'].play();
 }
 
 function pauseGame(){
-	//soundBuffer['backMusic'].pause();
+	soundBuffer['backMusic'].pause();
 	$('#space').spStop();
 	gameInstance.stop();
 }
@@ -114,7 +114,7 @@ function gameOver(){
 					buttons: { "Ok": function() { rankUser(); }}
 	});
 	
-	//soundBuffer['backMusic'].stop();
+	soundBuffer['backMusic'].stop();
 }
 
 function rankUser(){

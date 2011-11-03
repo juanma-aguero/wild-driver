@@ -1,17 +1,20 @@
 /** ship*/
 function ship(){
-	this.vel = 6;
+	this.vel = 1;
 	this.posX=200;
 	this.posY=200;
-	this.spriteX = 0;
+	this.spriteX = 360;
 	this.spriteY = 0;
-	this.width=30;
-	this.height=30;
+	this.width=90;
+	this.height=90;
 	this.img = "ship";
-	this.activeDirection="down";
+	
+	this.activeMovement="forward";
+	this.activeAngle = 90;
+	
 	this.state = 0;
 	this.isRebounding = false;
-	this.isSprited = false;
+	this.isSprited = true;
 	
 	/** weapon */
 	this.shot = 'fireball';
@@ -29,28 +32,11 @@ ship.prototype.update=function(ctx){
 	
 	this.context = ctx;
 	if(this.state == 0){
-		switch(this.activeDirection){
-			case "left":
-				if( this.posX > 0){
-					this.posX=this.posX-this.vel;
-				}
-				break;
-			case "up":
-				if( this.posY > 0){
-					this.posY=this.posY-this.vel;
-				}
-				break;
-			case "right":
-				if( this.posX < 678){
-					this.posX=this.posX+this.vel;
-				}
-				break;
-			case "down":
-				if( this.posY < 540){
-					this.posY=this.posY+this.vel;
-				}
-				break;
+		if( this.posY > 0){
+			this.posY=this.posY+(Math.sin(this.activeAngle*(Math.PI/-180))*this.vel);
+			this.posX=this.posX+(Math.cos(this.activeAngle*(Math.PI/-180))*this.vel);
 		}
+
 	}else{
 		var val = this.state/2;
 		if( val == 1 || val == 2 || val == 4 || val == 8){
@@ -71,6 +57,60 @@ ship.prototype.update=function(ctx){
 }
 
 
+
+ship.prototype.updateTilesetPosition = function(){
+	var x, y, v;
+
+	switch(this.activeAngle){
+		case 342:
+			x = 720; y = 90; v = 0.1; break;
+		case 324:
+			x = 630; y = 90; v = 0.1; break;
+		case 306:
+			x = 540; y = 90; v = 0.1; break;
+		case 288:
+			x = 450; y = 90; v = 0.1; break;
+		case 270:
+			x = 360; y = 90; v = 0; break;
+		case 252:
+			x = 270; y = 90; v = 0.1; break;
+		case 234:
+			x = 180; y = 90; v = 0.1; break;
+		case 216:
+			x = 90; y = 90; v = 0.1; break;
+		case 198:
+			x = 0; y = 90; v = 0.1; break;
+		case 180:
+			x = 810; y = 0; v = 0.3; break;
+		case 162:
+			x = 0; y = 0; v = 0.1; break;
+		case 144:
+			x = 90; y = 0; v = 0.1; break;
+		case 126:
+			x = 180; y = 0; v = 0.1; break;
+		case 108:
+			x = 270; y = 0; v = 0.1; break;
+		case 90:
+			x = 360; y = 0; v = 0.1; break;
+		case 72:
+			x = 450; y = 0; v = 0.1; break;
+		case 54:
+			x = 540; y = 0; v = 0.1; break;
+		case 36:
+			x = 630; y = 0; v = 0.1; break;
+		case 18:
+			x = 720; y = 0; v = 0.1; break;
+		case 0:
+		case 360:
+			x = 810; y = 90; v = 0; break;
+	}
+	
+	this.spriteX = x;
+	this.spriteY = y;
+}
+
+
+
 /*
  * Filter event
  */
@@ -78,16 +118,20 @@ ship.prototype.notify=function(e){
 
 	switch(e.keyCode){
 		case 37:
-		  this.activeDirection = "left";
+		  this.activeAngle+=18;
+		  this.updateTilesetPosition();
 		  break;
 		case 38:
-		  this.activeDirection = "up";
+		  this.activeMovement = "forward";
+		  this.vel+=0.5;
 		  break;
 		case 39:
-		  this.activeDirection = "right";
+		  this.activeAngle-=18;
+		  this.updateTilesetPosition();
 		  break;
 		case 40:
-		  this.activeDirection = "down";
+		  this.activeMovement = "backward";
+		  this.vel-=0.5;
 		  break;
 		case 70:
 			//var lazer = new Audio("./sounds/lazer.wav");
