@@ -1,16 +1,24 @@
 /** Rect*/
 function rock(){
-	this.vel = ( 2 + (Math.random()*(5-2)) );
-	this.posX= ( 0 + (Math.random()*(700-20)) );
+	//this.vel = ( 2 + (Math.random()*(5-2)) );
+	this.vel = 0;
+	//this.posX= ( 0 + (Math.random()*(700-20)) );
 	this.spriteX = 0;
 	this.spriteY = 0;
-	this.posY=0;
+	
+	this.posY=200;
+	this.posX=300;
+
 	this.width=64;
 	this.height=64;
 	this.img = 'rock';
 	this.isSprited = true;
 	this.state = 0;
 	this.clock = 0;
+
+	this.activeMovement="forward";
+	this.activeAngle = 90;
+
 }
 
 
@@ -24,7 +32,11 @@ rock.prototype.update=function(ship){
 		(ship.posX+ship.width >= this.posX  && ship.posX.width <= (this.posX+this.width)))&&
 		ship.posY >= this.posY && ship.posY <= this.posY+this.height && ship.state == 0 ){
 		//soundBuffer['ship-explosion'].play();
-		ship.state = 2;
+		// crash state
+		this.state = 4;
+		this.activeAngle = ship.activeAngle;
+		this.vel = ship.vel;
+
 	}
 	
 	// Shoot hits management
@@ -47,18 +59,18 @@ rock.prototype.update=function(ship){
 			
 		}
 	}
+
+	// Crash management
+	if( this.state == 4 ){
+		this.posY=this.posY+(Math.sin(this.activeAngle*(Math.PI/-180))*this.vel);
+	        this.posX=this.posX+(Math.cos(this.activeAngle*(Math.PI/-180))*this.vel);
+	}
 	
 	// Explotion management
 	if(this.state == 1 && this.clock > (imageBuffer[this.img].width/this.width)*2-2 ){
 		this.state = 2;
 	}
 	
-	// Position management
-	if(this.posY > context.height){
-		this.state = 3;
-	}else{
-		this.posY=this.posY+this.vel;
-	}
 	
 	// Animate management
 	if( this.clock % 2 == 0){

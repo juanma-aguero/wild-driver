@@ -3,7 +3,7 @@ function ship(){
 	this.vel = 1;
 	this.posX=200;
 	this.posY=200;
-	this.spriteX = 360;
+	this.spriteX = (5*90);
 	this.spriteY = 0;
 	this.width=90;
 	this.height=90;
@@ -56,58 +56,13 @@ ship.prototype.update=function(ctx){
 	
 }
 
-
-
 ship.prototype.updateTilesetPosition = function(){
-	var x, y, v;
-
-	switch(this.activeAngle){
-		case 342:
-			x = 720; y = 90; v = 0.1; break;
-		case 324:
-			x = 630; y = 90; v = 0.1; break;
-		case 306:
-			x = 540; y = 90; v = 0.1; break;
-		case 288:
-			x = 450; y = 90; v = 0.1; break;
-		case 270:
-			x = 360; y = 90; v = 0; break;
-		case 252:
-			x = 270; y = 90; v = 0.1; break;
-		case 234:
-			x = 180; y = 90; v = 0.1; break;
-		case 216:
-			x = 90; y = 90; v = 0.1; break;
-		case 198:
-			x = 0; y = 90; v = 0.1; break;
-		case 180:
-			x = 810; y = 0; v = 0.3; break;
-		case 162:
-			x = 0; y = 0; v = 0.1; break;
-		case 144:
-			x = 90; y = 0; v = 0.1; break;
-		case 126:
-			x = 180; y = 0; v = 0.1; break;
-		case 108:
-			x = 270; y = 0; v = 0.1; break;
-		case 90:
-			x = 360; y = 0; v = 0.1; break;
-		case 72:
-			x = 450; y = 0; v = 0.1; break;
-		case 54:
-			x = 540; y = 0; v = 0.1; break;
-		case 36:
-			x = 630; y = 0; v = 0.1; break;
-		case 18:
-			x = 720; y = 0; v = 0.1; break;
-		case 0:
-		case 360:
-			x = 810; y = 90; v = 0; break;
-	}
-	
-	this.spriteX = x;
-	this.spriteY = y;
+    var pos = (this.activeAngle/18);
+    //if (pos === 20) pos = 0;
+    this.spriteX = (pos * this.width);
+    this.spriteY = 0;
 }
+
 
 
 
@@ -119,6 +74,7 @@ ship.prototype.notify=function(e){
 	switch(e.keyCode){
 		case 37:
 		  this.activeAngle+=18;
+	          if(this.activeAngle > 360) this.activeAngle=18;
 		  this.updateTilesetPosition();
 		  break;
 		case 38:
@@ -127,6 +83,7 @@ ship.prototype.notify=function(e){
 		  break;
 		case 39:
 		  this.activeAngle-=18;
+		  if(this.activeAngle < 0) this.activeAngle = 342;
 		  this.updateTilesetPosition();
 		  break;
 		case 40:

@@ -39,7 +39,7 @@ game.prototype.init=function(){
 	this.ctx = canvas.getContext("2d");
 			
 	this.rocks.push(new rock());
-	this.rocks.push(new rock());
+//	this.rocks.push(new rock());
 	
 	this.startLoop();
 	
@@ -94,7 +94,7 @@ game.prototype.update=function(){
 	
 	for (var i=0; i<this.rocks.length; i++){
 		
-		if( this.rocks[i].state <= 1 ){
+		if( this.rocks[i].state <= 1 || this.rocks[i].state == 4){
 			this.rocks[i].update(this.rect1);
 		}
 		if(this.rocks[i].state == 2){
