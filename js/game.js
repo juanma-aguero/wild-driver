@@ -2,11 +2,16 @@
  * GAME class
  *
  */
-function game(){
-	this.rect1 = new ship();
+function game(addPointer){
+	// Context
 	this.ctx = undefined;
-	this.intLoop = null;
+	
+	// Objects
+	this.rect1 = new car(addPointer);
 	this.rocks=[];
+	this.circuit = new circuit();
+	
+	this.intLoop = null;
 	this.points = 0;
 }
 
@@ -38,22 +43,26 @@ game.prototype.init=function(){
 	var canvas = document.getElementById("canvas-layer");
 	this.ctx = canvas.getContext("2d");
 			
-	this.rocks.push(new rock());
-//	this.rocks.push(new rock());
+	this.circuit.build();
+	
+	this.rect1.circuit = this.circuit;
 	
 	this.startLoop();
-	
-	
+
 }
 
 game.prototype.startLoop=function(){
 	var gameObj = this;
 	
 	function loop(){
+		
 		// delete old objects
 		gameObj.deleteObject(gameObj.rect1);
-		for (i=0; i<gameObj.rocks.length; i++){
+		for (var i=0; i<gameObj.rocks.length; i++){
 			gameObj.deleteObject(gameObj.rocks[i]);
+		}
+		for (var i=0; i<gameObj.circuit.borders.length; i++){
+			gameObj.deleteObject(gameObj.circuit.borders[i]);
 		}
 		
 		// update states
@@ -61,8 +70,11 @@ game.prototype.startLoop=function(){
 
 		// draw new objects
 		gameObj.drawObject(gameObj.rect1);
-		for (i=0; i<gameObj.rocks.length; i++){
+		for (var i=0; i<gameObj.rocks.length; i++){
 			gameObj.drawObject(gameObj.rocks[i]);
+		}
+		for (var i=0; i<gameObj.circuit.borders.length; i++){
+			gameObj.drawObject(gameObj.circuit.borders[i]);
 		}
 		
 	}
@@ -92,29 +104,10 @@ game.prototype.update=function(){
 		gameOver()
 	}
 	
-	for (var i=0; i<this.rocks.length; i++){
-		
-		if( this.rocks[i].state <= 1 || this.rocks[i].state == 4){
-			this.rocks[i].update(this.rect1);
-		}
-		if(this.rocks[i].state == 2){
-			this.rocks.splice ( i, 1 );
-			this.rocks.push(new rock());
-		}
-		if(this.rocks[i].state == 3){
-			this.rocks.splice ( i, 1 );
-			this.generateRocks();
-		}
-		
+	for (var i=0; i<this.circuit.borders.length; i++){
+		this.circuit.borders[i].update();
 	}
 
-}
-
-game.prototype.generateRocks=function(){
-	var count = ( 1 + (Math.random()*(2-1)) );
-	for(var i=0; i < count; i++){
-		this.rocks.push(new rock());
-	}
 }
 
 /*
@@ -123,5 +116,9 @@ game.prototype.generateRocks=function(){
 game.prototype.notify=function(e){
 
 	this.rect1.notify(e);
-	//this.rock.notify(e);
+	
 }
+
+
+
+
