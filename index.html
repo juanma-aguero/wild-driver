@@ -13,9 +13,9 @@
 <script type="application/javascript" src="js/border.js"></script>
 <script type="application/javascript">
 
-function addPoints(angle){
+function addPoints(angle, vel){
 
-	updatePointsBoard(angle);
+	updatePointsBoard(angle, vel);
 }
 
 var addPointer = addPoints;
@@ -82,9 +82,9 @@ $(document).ready(function() {
 
 
   
-function updatePointsBoard(points){
+function updatePointsBoard(points, vel){
 	$("#points").text(points);
-	//$("#points").effect("bounce", { times:2 }, 100);
+	$("#vel").text(vel);
 }
 
 $(document).keydown(function(e){
@@ -95,20 +95,17 @@ $(document).keydown(function(e){
 
 function startGame(){
 	if(!gameRunning){
-		//$('#space').pan({fps: 30, speed: 3, dir: 'down', depth: 10});
 		gameRunning = true;
 		gameInstance.init();
 		
 	}else{
-		//$('#space').spStart();
 		gameInstance.startLoop();
 	}
 	//soundBuffer['backMusic'].play();
 }
 
 function pauseGame(){
-	soundBuffer['backMusic'].pause();
-	$('#space').spStop();
+	//soundBuffer['backMusic'].pause();
 	gameInstance.stop();
 }
 
@@ -181,8 +178,9 @@ function rankUser(){
 		<!-- center side panel -->
 		<div style="float: left; margin-left: auto; margin-right: auto; width: 708px; height: 570; position: relative; left: 0;">
 			<div class="header-layer">Wild Driver</div>
-			<div id="space" class="stage"></div>
-			<canvas id="canvas-layer" width="708" height="570px" >Your browser does not support html5.</canvas>
+			<div id="container"></div>
+				<canvas id="canvas-layer" width="708" height="570px"></canvas>
+			
 			<div id="loading-layer">
 				<span style="position: absolute; top: 250px; color: white; width: 708; left: 0;">Loading...</span>
 				<div id="progress-bar" style="left: 100; top: 300; position: absolute; width: 70%; z-index: 8;"></div>
@@ -194,8 +192,8 @@ function rankUser(){
 			<button onclick="startGame();return false;" style="width: 100%;">Start</button>
 			<button onclick="pauseGame();return false;" style="width: 100%;">Pause</button>
 			<button id="restartBtn" onclick="window.location = 'index.html'" style="width: 100%;">Refresh</button>
-			<a style="color: WHITE; float: left;font-size:25px;font-family:arial; margin-top: 5px; margin-left: 5px;">Angle:&nbsp;&nbsp;</a>
-			<a id="points" style="color: WHITE; float: left; font-size:30px;font-family:arial;margin-top: 2px;">0</a>
+			<span>Angle:&nbsp;&nbsp;</span><span id="points">0</span>
+			<span>Velocity:&nbsp;</span><span id="vel">0</span>
 		</div>
 		
 	</div>

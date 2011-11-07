@@ -7,27 +7,32 @@
 * n - default
 *
 */
-function car(addPointer){
+function car(iniX, iniY, addPointer){
+
+	// Physics
 	this.vel = 0;
-	this.posX=200;
-	this.posY=200;
-	this.spriteX = (5*90);
-	this.spriteY = 0;
+	this.posX=iniX;
+	this.posY=iniY;
 	this.width=90;
 	this.height=90;
-	this.img = "car";
+	this.mass=1000;
 	
+	// Movement
 	this.activeMovement="forward";
 	this.activeAngle = 90;
 	
-	this.state = 0;
-	
-	this.isRebounding = false;
+	// Renderization
+	this.spriteX = (5*this.width);
+	this.spriteY = 0;
+	this.img = "car";
 	this.isSprited = true;
 	
+	
+	this.state = 0;
+	this.isRebounding = false;
 	this.circuit = undefined;
 	
-	/** weapon */
+	// Weapon
 	this.shot = 'fireball';
 	this.isShooting = false;
 	this.shoots=[];
@@ -45,40 +50,39 @@ function car(addPointer){
 car.prototype.update=function(ctx){
 	
 	this.context = ctx;
-	var crashState = this.thereIsACrash();
-	if(crashState > 0 ){
-		//alert(crashState);
-		switch(crashState){
+	var crashSide = this.thereIsACrash();
+	if(crashSide > 0 ){
+		switch(crashSide){
 			case 1:
 				if( this.activeAngle > 90 && this.activeAngle < 180  ){
 					this.activeAngle = this.activeAngle - 90;
 				}else{
-					if( this.activeAngle > 180 && this.activeAngle < 270  )	this.activeAngle = this.activeAngle + (270-this.activeAngle);
-					if( this.activeAngle == 180)this.activeAngle = 0;
-					if( this.activeAngle == 0)this.activeAngle = 180;
-				} break;
-			case 5:
-				if( this.activeAngle > 270 && this.activeAngle < 360 ){
-					this.activeAngle = 0+(360 - this.activeAngle);
-				}else{
-					if( this.activeAngle > 180 && this.activeAngle < 270  )	{
-						this.activeAngle = (90+(this.activeAngle-180));
-					}else{
-						if( this.activeAngle > 90 && this.activeAngle < 180  )this.activeAngle = this.activeAngle - 90;
-						if( this.activeAngle == 270)this.activeAngle = 90;
-					}
+					if( this.activeAngle > 180 && this.activeAngle < 270  )	this.activeAngle=(270+(270-this.activeAngle));
+					if(this.activeAngle==180) this.activeAngle = 0;
 				}
 				break;
-			case 15:
+			case 2:
 				if( this.activeAngle > 270 && this.activeAngle < 360 ){
 					this.activeAngle = 0+(360 - this.activeAngle);
 				}else{
-					if( this.activeAngle > 180 && this.activeAngle < 270  )	{
-						this.activeAngle = (90+(this.activeAngle-180));
-					}else{
-						if( this.activeAngle > 90 && this.activeAngle < 180  )this.activeAngle = this.activeAngle - 90;
-						if( this.activeAngle == 270)this.activeAngle = 90;
-					}
+					if( this.activeAngle > 180 && this.activeAngle < 270  )	this.activeAngle = (90+(this.activeAngle-180));
+					if( this.activeAngle == 270)this.activeAngle = 90;
+				}
+				break;
+			case 3:
+				if( this.activeAngle > 270 && this.activeAngle < 360 ){
+					this.activeAngle = 180+(360-this.activeAngle);
+				}else{
+					if( this.activeAngle > 0 && this.activeAngle < 90  )this.activeAngle = (90+(90-this.activeAngle));
+					if( this.activeAngle == 0)this.activeAngle = 180;
+				}
+				break;
+			case 4:
+				if( this.activeAngle > 0 && this.activeAngle < 90  )	{
+					this.activeAngle = (270+(90-this.activeAngle));
+				}else{
+					if( this.activeAngle > 90 && this.activeAngle < 180  )this.activeAngle = (180+(180-this.activeAngle));
+					if( this.activeAngle == 90)this.activeAngle = 270;
 				}
 				break;
 		}
@@ -95,16 +99,27 @@ car.prototype.update=function(ctx){
 		this.drawShoots(ctx);
 	}
 	this.updateTilesetPosition();
-	this.showAngle(this.activeAngle);
+	this.showAngle(this.activeAngle, this.vel);
 }
 
 
 /*****/
 car.prototype.defaultMovement = function(){
-	if( this.posY > 0){
-		this.posY=this.posY+(Math.sin(this.activeAngle*(Math.PI/-180))*this.vel);
-		this.posX=this.posX+(Math.cos(this.activeAngle*(Math.PI/-180))*this.vel);
+	
+	var fc = this.circuit.frictionCoeficient;
+	
+	if(this.vel > fc){
+		this.vel = this.vel-fc;
+	}else{
+		if(this.vel < -fc){
+			this.vel = this.vel+fc;
+		}else{
+			this.vel = 0;
+		}
 	}
+	this.posY=this.posY+(Math.sin(this.activeAngle*(Math.PI/-180))*this.vel);
+	this.posX=this.posX+(Math.cos(this.activeAngle*(Math.PI/-180))*this.vel);
+
 }
 
 
@@ -119,14 +134,15 @@ car.prototype.crashMovement = function(){
 
 /******/
 car.prototype.thereIsACrash = function(){
-	var response = 0;
+	var intersectionsCount = 0;
 	for (var i=0; i<this.circuit.borders.length; i++){
-		response = this.intersection(this, this.circuit.borders[i]);
-		if( response > 0){
+		intersectionsCount = this.intersection(this, this.circuit.borders[i]);
+		if( intersectionsCount > 0){
+			//alert("interseccion:"+intersectionsCount);
 			break;
 		}
 	}
-	return response;
+	return intersectionsCount;
 }
 
 
@@ -134,40 +150,68 @@ car.prototype.thereIsACrash = function(){
 car.prototype.intersection = function(object1, object2){
 	var response = 0;
 	
+	// Upper left corner
 	if( 
-		( object1.posX <= (object2.posX+object2.width) ) && 
-		(object1.posY <= (object2.posY+object2.height)) &&
+		( object1.posX < (object2.posX+object2.width) ) && 
+		(object1.posY < (object2.posY+object2.height)) &&
 		(object1.posX >= object2.posX) && 
 		(object1.posY >= object2.posY) 
 			){
-		response += 1;
+		var sideSum4 = ((object2.posX+object2.width)-object1.posX);
+		var sideSum1 = ((object2.posY+object2.height)-object1.posY);
+		if( sideSum1 > sideSum4){
+			response = 1;
+		}else{
+			response = 4;
+		}
 	}
 	
+	// Down left corner
 	if( 
-		( object1.posX <= (object2.posX+object2.width) ) && 
+		( object1.posX < (object2.posX+object2.width) ) && 
 		(object1.posX >= object2.posX) && 
-		((object1.posY+object1.height) <= (object2.posY+object2.height)) &&
+		((object1.posY+object1.height) < (object2.posY+object2.height)) &&
 		((object1.posY+object1.height) >= object2.posY)
 			){
-		response += 5;
+		var sideSum2 = ((object2.posX+object2.width)-object1.posX);
+		var sideSum1 = ((object1.posY+object1.height)-object2.posY);
+		if( sideSum1 > sideSum2){
+			response = 1;
+		}else{
+			response = 2;
+		}
 	}
 	
+	// Down right corner
 	if( 
-		((object1.posX+object1.width) <= (object2.posX+object2.width) ) && 
-		((object1.posX+object1.width) >= object2.posX) && 
-		((object1.posY+object1.height) <= (object2.posY+object2.height)) &&
+		((object1.posX+object1.width) < (object2.posX+object2.width) ) && 
+		((object1.posX+object1.width) > object2.posX) && 
+		((object1.posY+object1.height) < (object2.posY+object2.height)) &&
 		((object1.posY+object1.height) >= object2.posY)
 			){
-		response += 10;
+		var sideSum3 = ((object2.posX+object2.width)-object1.posX);
+		var sideSum2 = ((object2.posY+object2.height)-object1.posY);
+		if( sideSum2 > sideSum3){
+			response = 2;
+		}else{
+			response = 3;
+		}
 	}
 	
+	// Upper right corner
 	if( 
 		((object1.posX+object1.width) <= (object2.posX+object2.width) ) && 
 		((object1.posX+object1.width) >= object2.posX) && 
 		((object1.posY) <= (object2.posY+object2.height)) &&
 		((object1.posY) >= object2.posY)
 			){
-		response += 15;
+		var sideSum4 = ((object1.posX+object1.width)-object2.posX);
+		var sideSum3 = ((object2.posY+object2.height)-object1.posY);
+		if( sideSum3 > sideSum4){
+			response = 3;
+		}else{
+			response = 4;
+		}
 	}
 	
 	return response;
@@ -176,7 +220,6 @@ car.prototype.intersection = function(object1, object2){
 
 car.prototype.updateTilesetPosition = function(){
     var pos = (this.activeAngle/18);
-    //if (pos === 20) pos = 0;
     this.spriteX = (pos * this.width);
     this.spriteY = 0;
 }
@@ -216,8 +259,6 @@ car.prototype.notify=function(e){
 			this.isShooting = true;
 			break;
 	}
-
-	
 	
 }
 

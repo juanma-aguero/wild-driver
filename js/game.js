@@ -7,8 +7,14 @@ function game(addPointer){
 	this.ctx = undefined;
 	
 	// Objects
-	this.rect1 = new car(addPointer);
+	this.cars = [];
+	
 	this.rocks=[];
+
+	this.cars.push(new car(100, 200, addPointer));
+	//this.cars.push(new car(200, 300, addPointer));
+	//this.cars.push(new car(300, 300, addPointer));
+	
 	this.circuit = new circuit();
 	
 	this.intLoop = null;
@@ -45,7 +51,9 @@ game.prototype.init=function(){
 			
 	this.circuit.build();
 	
-	this.rect1.circuit = this.circuit;
+	for (var i=0; i<this.cars.length; i++){
+		this.cars[i].circuit = this.circuit;
+	}
 	
 	this.startLoop();
 
@@ -57,7 +65,9 @@ game.prototype.startLoop=function(){
 	function loop(){
 		
 		// delete old objects
-		gameObj.deleteObject(gameObj.rect1);
+		for (var i=0; i<gameObj.cars.length; i++){
+			gameObj.deleteObject(gameObj.cars[i]);
+		}
 		for (var i=0; i<gameObj.rocks.length; i++){
 			gameObj.deleteObject(gameObj.rocks[i]);
 		}
@@ -69,7 +79,9 @@ game.prototype.startLoop=function(){
 		gameObj.update();
 
 		// draw new objects
-		gameObj.drawObject(gameObj.rect1);
+		for (var i=0; i<gameObj.cars.length; i++){
+			gameObj.drawObject(gameObj.cars[i]);
+		}
 		for (var i=0; i<gameObj.rocks.length; i++){
 			gameObj.drawObject(gameObj.rocks[i]);
 		}
@@ -97,12 +109,22 @@ game.prototype.stop=function(){
  */
 game.prototype.update=function(){
 	
-	if( this.rect1.state <= 8 ){
-		this.rect1.update(this.ctx);
-	}else{
-		this.stop();
-		gameOver()
+	for (var i=0; i<this.cars.length; i++){
+		if( this.cars[i].state <= 8 ){
+		this.cars[i].update(this.ctx);
+		
+		}else{
+			this.stop();
+			gameOver()
+		}
 	}
+		
+	// if( this.rect1.state <= 8 ){
+		// this.rect1.update(this.ctx);
+	// }else{
+		// this.stop();
+		// gameOver()
+	// }
 	
 	for (var i=0; i<this.circuit.borders.length; i++){
 		this.circuit.borders[i].update();
@@ -114,11 +136,7 @@ game.prototype.update=function(){
  * Notify event to all components
  */
 game.prototype.notify=function(e){
-
-	this.rect1.notify(e);
-	
+	for (var i=0; i<this.cars.length; i++){
+		this.cars[i].notify(e);
+	}
 }
-
-
-
-
