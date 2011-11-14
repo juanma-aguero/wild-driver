@@ -11,11 +11,17 @@ function game(addPointer){
 	
 	this.rocks=[];
 
-	this.cars.push(new car(100, 200, addPointer));
-	//this.cars.push(new car(200, 300, addPointer));
+	// keyconfs
+	var keyConf1 = {up: 38, down: 40, left: 37, right: 39};
+	var keyConf2 = {up: 87, down: 83, left: 65, right: 68};
+	
+	this.cars.push(new car(320, 210, addPointer, keyConf1));
+	//this.cars.push(new car(200, 300, addPointer, keyConf2));
 	//this.cars.push(new car(300, 300, addPointer));
 	
 	this.circuit = new circuit();
+	
+	
 	
 	this.intLoop = null;
 	this.points = 0;
@@ -26,11 +32,16 @@ function game(addPointer){
  * Draw objects on canvas
  */
 game.prototype.drawObject=function (object) {
-	if(object.isSprited){
-		this.ctx.drawImage(imageBuffer[object.img], object.spriteX, object.spriteY, object.width, object.height, object.posX, object.posY, object.width, object.height);
-	}else{
-		this.ctx.drawImage(imageBuffer[object.img], object.posX, object.posY, object.width, object.height);
+	if(	object.posX <= this.circuit.cameraPosX+this.circuit.cameraWidth && object.posX >= this.circuit.cameraPosX &&
+		object.posY <= this.circuit.cameraPosY+this.circuit.cameraHeight && object.posY >= this.circuit.cameraPosY
+		){
+		if(object.isSprited){
+			this.ctx.drawImage(imageBuffer[object.img], object.spriteX, object.spriteY, object.width, object.height, object.posX, object.posY, object.width, object.height);
+		}else{
+			this.ctx.drawImage(imageBuffer[object.img], object.posX, object.posY, object.width, object.height);
+		}
 	}
+	
 }
 
 
@@ -88,7 +99,6 @@ game.prototype.startLoop=function(){
 		for (var i=0; i<gameObj.circuit.borders.length; i++){
 			gameObj.drawObject(gameObj.circuit.borders[i]);
 		}
-		
 	}
 	
 	this.stop();
@@ -118,13 +128,7 @@ game.prototype.update=function(){
 			gameOver()
 		}
 	}
-		
-	// if( this.rect1.state <= 8 ){
-		// this.rect1.update(this.ctx);
-	// }else{
-		// this.stop();
-		// gameOver()
-	// }
+	
 	
 	for (var i=0; i<this.circuit.borders.length; i++){
 		this.circuit.borders[i].update();

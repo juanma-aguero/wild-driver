@@ -1,17 +1,18 @@
 /** Rect*/
 function circuit(){
-	this.width=64;
-	this.height=64;
-	this.img = 'circuit';
-	this.isSprited = true;
+	this.width=1000;
+	this.height=1000;
 	this.state = 0;
 	this.clock = 0;
-	
-	this.frictionCoeficient = 0.15;
-
-	this.activeMovement="forward";
-	this.activeAngle = 90;
+	this.frictionCoeficient = 0.01;
 	this.borders = [];
+	
+	// camera position
+	this.cameraPosX = 0;
+	this.cameraPosY = 0;
+	this.cameraWidth = 600;
+	this.cameraHeight = 400;
+	
 }
 
 circuit.prototype.build=function(){

@@ -7,7 +7,7 @@
 * n - default
 *
 */
-function car(iniX, iniY, addPointer){
+function car(iniX, iniY, addPointer, keyConf){
 
 	// Physics
 	this.vel = 0;
@@ -16,6 +16,9 @@ function car(iniX, iniY, addPointer){
 	this.width=90;
 	this.height=90;
 	this.mass=1000;
+
+	// key configuration
+	this.keyConf = keyConf;
 	
 	// Movement
 	this.activeMovement="forward";
@@ -117,9 +120,26 @@ car.prototype.defaultMovement = function(){
 			this.vel = 0;
 		}
 	}
-	this.posY=this.posY+(Math.sin(this.activeAngle*(Math.PI/-180))*this.vel);
-	this.posX=this.posX+(Math.cos(this.activeAngle*(Math.PI/-180))*this.vel);
+	
+	var deltaPosX = (Math.sin(this.activeAngle*(Math.PI/-180))*this.vel);
+	var deltaPosY = (Math.cos(this.activeAngle*(Math.PI/-180))*this.vel);
+	
+	this.posY=this.posY+deltaPosX;
+	this.posX=this.posX+deltaPosY;
+	
+	this.circuit.cameraPosX = this.circuit.cameraPosX + deltaPosX;
+	this.circuit.cameraPosY = this.circuit.cameraPosY + deltaPosY;
 
+	var position = $('#canvas-layer').position();
+	if( this.posY >= this.circuit.height){
+		//alert("car top: " + this.posY + " | " +"circuit top: " + (position.top+this.circuit.height));
+		
+		this.vel = 0;
+	}
+	if( this.posX >= this.circuit.width){
+		//alert("left: " + position.left);
+		this.vel = 0;
+	}
 }
 
 
@@ -138,7 +158,6 @@ car.prototype.thereIsACrash = function(){
 	for (var i=0; i<this.circuit.borders.length; i++){
 		intersectionsCount = this.intersection(this, this.circuit.borders[i]);
 		if( intersectionsCount > 0){
-			//alert("interseccion:"+intersectionsCount);
 			break;
 		}
 	}
@@ -233,19 +252,19 @@ car.prototype.updateTilesetPosition = function(){
 car.prototype.notify=function(e){
 
 	switch(e.keyCode){
-		case 37:
+		case this.keyConf.left:
 		  this.activeAngle+=18;
 	          if(this.activeAngle == 360) this.activeAngle=0;
 		  break;
-		case 38:
+		case this.keyConf.up:
 		  this.activeMovement = "forward";
 		  this.vel+=0.5;
 		  break;
-		case 39:
+		case this.keyConf.right:
 		  this.activeAngle-=18;
 		  if(this.activeAngle < 0) this.activeAngle = 342;
 		  break;
-		case 40:
+		case this.keyConf.down:
 		  this.activeMovement = "backward";
 		  this.vel-=0.5;
 		  break;
