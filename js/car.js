@@ -23,6 +23,8 @@ function car(iniX, iniY, addPointer, keyConf){
 	// Movement
 	this.activeMovement="forward";
 	this.activeAngle = 90;
+	this.lastAngle = 90;
+	this.counter = 0;
 	
 	// Renderization
 	this.spriteX = (5*this.width);
@@ -32,7 +34,6 @@ function car(iniX, iniY, addPointer, keyConf){
 	
 	
 	this.state = 0;
-	this.isRebounding = false;
 	this.circuit = undefined;
 	
 	// Weapon
@@ -89,6 +90,7 @@ car.prototype.update=function(ctx){
 				}
 				break;
 		}
+		this.lastAngle = this.activeAngle;
 		
 	}
 	switch( this.state ){
@@ -121,23 +123,40 @@ car.prototype.defaultMovement = function(){
 		}
 	}
 	
-	var deltaPosX = (Math.sin(this.activeAngle*(Math.PI/-180))*this.vel);
-	var deltaPosY = (Math.cos(this.activeAngle*(Math.PI/-180))*this.vel);
+	var angleForCalc = undefined;
+	var slippingTime = (0.5/fc);
+	// movement
+	if(this.activeAngle != this.lastAngle){
+		if(this.counter < slippingTime){
+			angleForCalc = this.lastAngle;
+			this.counter++;
+		}else{
+			this.counter = 0;
+			this.lastAngle = this.activeAngle;
+			angleForCalc = this.lastAngle;
+		}
+	}else{
+		angleForCalc = this.activeAngle;
+	}
 	
-	this.posY=this.posY+deltaPosX;
-	this.posX=this.posX+deltaPosY;
+	var deltaPosY = (Math.sin(angleForCalc*(Math.PI/-180))*this.vel);
+	var deltaPosX = (Math.cos(angleForCalc*(Math.PI/-180))*this.vel);
 	
+	// car update
+	this.posY=this.posY+deltaPosY;
+	this.posX=this.posX+deltaPosX;
+	
+	// camera update
 	this.circuit.cameraPosX = this.circuit.cameraPosX + deltaPosX;
 	this.circuit.cameraPosY = this.circuit.cameraPosY + deltaPosY;
 
-	var position = $('#canvas-layer').position();
+	// check boundaries
 	if( this.posY >= this.circuit.height){
-		//alert("car top: " + this.posY + " | " +"circuit top: " + (position.top+this.circuit.height));
-		
+		alert("Max height reached: " + this.posY);
 		this.vel = 0;
 	}
 	if( this.posX >= this.circuit.width){
-		//alert("left: " + position.left);
+		alert("Max width reached : " + this.posX);
 		this.vel = 0;
 	}
 }
@@ -250,33 +269,37 @@ car.prototype.updateTilesetPosition = function(){
  * Filter event
  */
 car.prototype.notify=function(e){
-
-	switch(e.keyCode){
-		case this.keyConf.left:
-		  this.activeAngle+=18;
-	          if(this.activeAngle == 360) this.activeAngle=0;
-		  break;
-		case this.keyConf.up:
-		  this.activeMovement = "forward";
-		  this.vel+=0.5;
-		  break;
-		case this.keyConf.right:
-		  this.activeAngle-=18;
-		  if(this.activeAngle < 0) this.activeAngle = 342;
-		  break;
-		case this.keyConf.down:
-		  this.activeMovement = "backward";
-		  this.vel-=0.5;
-		  break;
-		case 70:
-			//var lazer = new Audio("./sounds/lazer.wav");
-			//lazer.play();
-			var nShoot=[];
-			nShoot[0]=this.posX+10;
-			nShoot[1]=this.posY+10;
-			this.shoots.push(nShoot);
-			this.isShooting = true;
-			break;
+	var len = e.length;
+	for (i=0;i<len;i++){
+		switch(e[i].keyCode){
+			case this.keyConf.left:
+			  if( this.lastAngle ){
+				  this.activeAngle+=18;
+				  if(this.activeAngle == 360) this.activeAngle=0;
+			  }
+			  break;
+			case this.keyConf.up:
+			  this.activeMovement = "forward";
+			  if(this.vel < 10) this.vel+=0.5;
+			  break;
+			case this.keyConf.right:
+			  this.activeAngle-=18;
+			  if(this.activeAngle < 0) this.activeAngle = 342;
+			  break;
+			case this.keyConf.down:
+			  this.activeMovement = "backward";
+			  if(this.vel > -10) this.vel-=0.5;
+			  break;
+			case 70:
+				//var lazer = new Audio("./sounds/lazer.wav");
+				//lazer.play();
+				var nShoot=[];
+				nShoot[0]=this.posX+10;
+				nShoot[1]=this.posY+10;
+				this.shoots.push(nShoot);
+				this.isShooting = true;
+				break;
+		}
 	}
 	
 }

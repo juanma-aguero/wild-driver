@@ -89,7 +89,13 @@ function updatePointsBoard(points, vel){
 
 $(document).keydown(function(e){
 	if(gameRunning){
-		gameInstance.notify(e);
+		gameInstance.notify(e, 'keydown');
+	}
+});
+
+$(document).keyup(function(e){
+	if(gameRunning){
+		gameInstance.notify(e, 'keyup');
 	}
 });
 
@@ -193,7 +199,7 @@ function rankUser(){
 			<button onclick="pauseGame();return false;" style="width: 100%;">Pause</button>
 			<button id="restartBtn" onclick="window.location = 'index.html'" style="width: 100%;">Refresh</button>
 			<span>Angle:&nbsp;&nbsp;</span><span id="points">0</span>
-			<span>Velocity:&nbsp;</span><span id="vel">0</span>
+			<span>Speed:&nbsp;</span><span id="vel">0</span>
 		</div>
 		
 	</div>

@@ -15,13 +15,13 @@ function game(addPointer){
 	var keyConf1 = {up: 38, down: 40, left: 37, right: 39};
 	var keyConf2 = {up: 87, down: 83, left: 65, right: 68};
 	
-	this.cars.push(new car(320, 210, addPointer, keyConf1));
+	this.cars.push(new car(1120, 610, addPointer, keyConf1));
 	//this.cars.push(new car(200, 300, addPointer, keyConf2));
 	//this.cars.push(new car(300, 300, addPointer));
 	
 	this.circuit = new circuit();
 	
-	
+	this.activeKeys = [];
 	
 	this.intLoop = null;
 	this.points = 0;
@@ -32,14 +32,11 @@ function game(addPointer){
  * Draw objects on canvas
  */
 game.prototype.drawObject=function (object) {
-	if(	object.posX <= this.circuit.cameraPosX+this.circuit.cameraWidth && object.posX >= this.circuit.cameraPosX &&
-		object.posY <= this.circuit.cameraPosY+this.circuit.cameraHeight && object.posY >= this.circuit.cameraPosY
-		){
-		if(object.isSprited){
-			this.ctx.drawImage(imageBuffer[object.img], object.spriteX, object.spriteY, object.width, object.height, object.posX, object.posY, object.width, object.height);
-		}else{
-			this.ctx.drawImage(imageBuffer[object.img], object.posX, object.posY, object.width, object.height);
-		}
+
+	if(object.isSprited){
+		this.ctx.drawImage(imageBuffer[object.img], object.spriteX, object.spriteY, object.width, object.height, (object.posX-this.circuit.cameraPosX), (object.posY-this.circuit.cameraPosY), object.width, object.height);
+	}else{
+		this.ctx.drawImage(imageBuffer[object.img], (object.posX-this.circuit.cameraPosX), (object.posY-this.circuit.cameraPosY), object.width, object.height);
 	}
 	
 }
@@ -49,7 +46,7 @@ game.prototype.drawObject=function (object) {
  * Delete objects on canvas
  */
 game.prototype.deleteObject=function (object) {
-	this.ctx.clearRect(object.posX,object.posY,object.width,object.height);
+	this.ctx.clearRect((object.posX-this.circuit.cameraPosX), (object.posY-this.circuit.cameraPosY),object.width,object.height);
 }
 
 
@@ -139,8 +136,17 @@ game.prototype.update=function(){
 /*
  * Notify event to all components
  */
-game.prototype.notify=function(e){
+game.prototype.notify=function(e, event){
+	if(event == 'keydown'){
+		this.activeKeys.push(e);
+	}else{
+		this.activeKeys.pop(e);
+	}
+	
 	for (var i=0; i<this.cars.length; i++){
-		this.cars[i].notify(e);
+		this.cars[i].notify(this.activeKeys);
 	}
 }
+
+
+
