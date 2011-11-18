@@ -1,11 +1,12 @@
 /** Border*/
-function border(x0, y0){
+function border(x0, y0, type){
 
 	this.vel = 0;
 	
 	this.spriteX = 0;
 	this.spriteY = 0;
 	
+	this.type = type;
 
 	this.width=30;
 	this.height=30;

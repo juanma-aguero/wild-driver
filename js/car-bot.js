@@ -7,20 +7,16 @@
 * n - default
 *
 */
-function car(iniX, iniY, addPointer, keyConf){
+function carBot(initParams, addPointer){
 
 	// Physics
-	this.vel = 0;
-	this.posX=iniX;
-	this.posY=iniY;
+	this.vel = initParams.vel;
+	this.posX=initParams.posX;
+	this.posY=initParams.posY;
 	this.width=90;
 	this.height=90;
 	this.mass=1000;
 
-
-	// key configuration
-	this.keyConf = keyConf;
-	
 	// Movement
 	this.activeMovement="forward";
 	this.activeAngle = 90;
@@ -48,10 +44,12 @@ function car(iniX, iniY, addPointer, keyConf){
 	
 }
 
+
+
 /*
- * Update car state
+ * Update carBot state
  */
-car.prototype.update=function(ctx){
+carBot.prototype.update=function(ctx){
 	
 	this.context = ctx;
 	var crashSide = this.thereIsACrash();
@@ -106,12 +104,12 @@ car.prototype.update=function(ctx){
 		this.drawShoots(ctx);
 	}
 	this.updateTilesetPosition();
-	this.showAngle(this.activeAngle, this.vel);
+	//this.showAngle(this.activeAngle, this.vel);
 }
 
 
 /*****/
-car.prototype.defaultMovement = function(){
+carBot.prototype.defaultMovement = function(){
 	
 	var fc = this.circuit.frictionCoeficient;
 	
@@ -126,7 +124,7 @@ car.prototype.defaultMovement = function(){
 	}
 	
 	var angleForCalc = undefined;
-	var slippingTime = ((this.vel/60)/fc);
+	var slippingTime = (0.5/fc);
 	// movement
 	if(this.activeAngle != this.lastAngle){
 		if(this.counter < slippingTime){
@@ -144,13 +142,13 @@ car.prototype.defaultMovement = function(){
 	var deltaPosY = (Math.sin(angleForCalc*(Math.PI/-180))*this.vel);
 	var deltaPosX = (Math.cos(angleForCalc*(Math.PI/-180))*this.vel);
 	
-	// car update
+	// carBot update
 	this.posY=this.posY+deltaPosY;
 	this.posX=this.posX+deltaPosX;
 	
 	// camera update
-	this.circuit.cameraPosX = this.circuit.cameraPosX + deltaPosX;
-	this.circuit.cameraPosY = this.circuit.cameraPosY + deltaPosY;
+	// this.circuit.cameraPosX = this.circuit.cameraPosX + deltaPosX;
+	// this.circuit.cameraPosY = this.circuit.cameraPosY + deltaPosY;
 
 	// check boundaries
 	if( this.posY >= this.circuit.height){
@@ -165,7 +163,7 @@ car.prototype.defaultMovement = function(){
 
 
 /******/
-car.prototype.crashMovement = function(){
+carBot.prototype.crashMovement = function(){
 	if( this.posY > 0){
 			this.posY=this.posY+(Math.sin(this.activeAngle*(Math.PI/-180))*this.vel);
 			this.posX=this.posX+(Math.cos(this.activeAngle*(Math.PI/-180))*this.vel);
@@ -174,7 +172,7 @@ car.prototype.crashMovement = function(){
 
 
 /******/
-car.prototype.thereIsACrash = function(){
+carBot.prototype.thereIsACrash = function(){
 	var intersectionsCount = 0;
 	for (var i=0; i<this.circuit.borders.length; i++){
 		intersectionsCount = this.intersection(this, this.circuit.borders[i]);
@@ -187,7 +185,7 @@ car.prototype.thereIsACrash = function(){
 
 
 /** interseccion */
-car.prototype.intersection = function(object1, object2){
+carBot.prototype.intersection = function(object1, object2){
 	var response = 0;
 	
 	// Upper left corner
@@ -258,7 +256,7 @@ car.prototype.intersection = function(object1, object2){
 }
 
 
-car.prototype.updateTilesetPosition = function(){
+carBot.prototype.updateTilesetPosition = function(){
     var pos = (this.activeAngle/18);
     this.spriteX = (pos * this.width);
     this.spriteY = 0;
@@ -270,7 +268,7 @@ car.prototype.updateTilesetPosition = function(){
 /*
  * Filter event
  */
-car.prototype.notify=function(e){
+carBot.prototype.notify=function(e){
 	
 	var len = e.length;
 	
@@ -306,7 +304,7 @@ car.prototype.notify=function(e){
 }
 
 
-car.prototype.drawShoots=function(ctx){
+carBot.prototype.drawShoots=function(ctx){
 	
 	for (i=0; i<this.shoots.length; i++){
 		ctx.clearRect(this.shoots[i][0], this.shoots[i][1]+10, 15, 15);
@@ -315,7 +313,8 @@ car.prototype.drawShoots=function(ctx){
 	
 }
 
-car.prototype.clearShoot=function(x, y){
+carBot.prototype.clearShoot=function(x, y){
 	this.context.clearRect(x, y, 15, 15);
 	
 }
+

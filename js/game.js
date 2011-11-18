@@ -15,9 +15,13 @@ function game(addPointer){
 	var keyConf1 = {up: 38, down: 40, left: 37, right: 39};
 	var keyConf2 = {up: 87, down: 83, left: 65, right: 68};
 	
+	var youConf = { posX: 1120, posY: 610, vel: 0 };
+	var botConf = { posX: 1070, posY: 610, vel: 5 };
+
+	
+	// Characters
 	this.cars.push(new car(1120, 610, addPointer, keyConf1));
-	//this.cars.push(new car(200, 300, addPointer, keyConf2));
-	//this.cars.push(new car(300, 300, addPointer));
+	this.cars.push(new carBot(botConf, addPointer));
 	
 	this.circuit = new circuit();
 	
@@ -32,13 +36,12 @@ function game(addPointer){
  * Draw objects on canvas
  */
 game.prototype.drawObject=function (object) {
-
 	if(object.isSprited){
 		this.ctx.drawImage(imageBuffer[object.img], object.spriteX, object.spriteY, object.width, object.height, (object.posX-this.circuit.cameraPosX), (object.posY-this.circuit.cameraPosY), object.width, object.height);
 	}else{
 		this.ctx.drawImage(imageBuffer[object.img], (object.posX-this.circuit.cameraPosX), (object.posY-this.circuit.cameraPosY), object.width, object.height);
 	}
-	
+
 }
 
 
