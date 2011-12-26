@@ -90,13 +90,13 @@ function updatePointsBoard(points, vel){
 
 $(document).keydown(function(e){
 	if(gameRunning){
-		gameInstance.notify(e, 'keydown');
+		gameInstance.notify(e.keyCode, 'keydown');
 	}
 });
 
 $(document).keyup(function(e){
 	if(gameRunning){
-		gameInstance.notify(e, 'keyup');
+		gameInstance.notify(e.keyCode, 'keyup');
 	}
 });
 

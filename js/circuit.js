@@ -4,7 +4,7 @@ function circuit(){
 	this.height=2000;
 	this.state = 0;
 	this.clock = 0;
-	this.frictionCoeficient = 0.01;
+	this.frictionCoeficient = 0.05;
 	this.borders = [];
 	
 	// camera position

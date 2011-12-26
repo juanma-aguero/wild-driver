@@ -275,7 +275,7 @@ car.prototype.notify=function(e){
 	var len = e.length;
 	
 	for (i=0;i<len;i++){
-		switch(e[i].keyCode){
+		switch(e[i]){
 			case this.keyConf.left:
 				  this.activeAngle+=18;
 				  if(this.activeAngle == 360) this.activeAngle=0;

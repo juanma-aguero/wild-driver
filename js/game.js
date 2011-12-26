@@ -12,7 +12,7 @@ function game(addPointer){
 	this.rocks=[];
 
 	// keyconfs
-	var keyConf1 = {up: 38, down: 40, left: 37, right: 39};
+	var keyConf1 = {up: 'arrow-up', down: 'arrow-down', left: 'arrow-left', right: 'arrow-right'};
 	var keyConf2 = {up: 87, down: 83, left: 65, right: 68};
 	
 	var youConf = { posX: 1120, posY: 610, vel: 0 };
@@ -140,10 +140,14 @@ game.prototype.update=function(){
  * Notify event to all components
  */
 game.prototype.notify=function(e, event){
+
+	var mapped = getValue(e);
+
 	if(event == 'keydown'){
-		this.activeKeys.push(e);
-	}else{
-		this.activeKeys.pop(e);
+		this.activeKeys.push(mapped);
+	}
+	if(event == 'keyup'){
+		this.activeKeys.splice(this.activeKeys.indexOf(mapped), 1);
 	}
 	
 	for (var i=0; i<this.cars.length; i++){
@@ -152,4 +156,34 @@ game.prototype.notify=function(e, event){
 }
 
 
-
+function getValue(e){
+	switch(e){
+		case 38:
+			return 'arrow-up';
+			break;
+		case 40:
+			return 'arrow-down';
+			break;
+		case 37:
+			return 'arrow-left';
+			break;
+		case 39:
+			return 'arrow-right';
+			break;
+		case 87:
+			return 'key-w';
+			break;
+		case 83:
+			return 'key-s';
+			break;
+		case 65:
+			return 'key-a';
+			break;
+		case 68:
+			return 'key-d';
+			break;
+		default:
+			return 'unknown';
+			break;
+	}
+}

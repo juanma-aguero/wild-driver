@@ -10,6 +10,7 @@
 function carBot(initParams, addPointer){
 
 	// Physics
+	this.initParams = initParams;
 	this.vel = initParams.vel;
 	this.posX=initParams.posX;
 	this.posY=initParams.posY;
@@ -89,6 +90,40 @@ carBot.prototype.update=function(ctx){
 				break;
 		}
 		this.lastAngle = this.activeAngle;
+		
+	}else{
+		
+		// Circuit control
+		if( this.posX > 1000 &&
+			this.posY < (this.initParams.posY-350) &&
+			this.activeAngle < 180
+			){
+			this.activeAngle += 18;
+		}
+		if( this.posX < 300 &&
+			this.posY < 500 &&
+			this.activeAngle < 270
+			){
+			this.activeAngle += 18;
+		}
+		if( this.posX < 400 &&
+			this.posY > 1000 &&
+			this.activeAngle >= 270
+			){
+			this.activeAngle+=18;
+			if(this.activeAngle == 360) this.activeAngle=0;
+		}
+		if( this.posX > 1000 &&
+			this.posY > 1000 &&
+			this.activeAngle < 90
+			){
+			this.activeAngle += 18;
+		}
+
+		// speed control
+		if( this.vel < 2){
+			this.vel += 5;
+		}
 		
 	}
 	
@@ -270,37 +305,7 @@ carBot.prototype.updateTilesetPosition = function(){
  */
 carBot.prototype.notify=function(e){
 	
-	var len = e.length;
 	
-	for (i=0;i<len;i++){
-		switch(e[i].keyCode){
-			case this.keyConf.left:
-				  this.activeAngle+=18;
-				  if(this.activeAngle == 360) this.activeAngle=0;
-			  break;
-			case this.keyConf.up:
-			  this.activeMovement = "forward";
-			  if(this.vel < 10) this.vel+=0.5;
-			  break;
-			case this.keyConf.right:
-				  this.activeAngle-=18;
-				  if(this.activeAngle < 0) this.activeAngle = 342;
-			  break;
-			case this.keyConf.down:
-			  this.activeMovement = "backward";
-			  if(this.vel > -10) this.vel-=0.5;
-			  break;
-			case 70:
-				//var lazer = new Audio("./sounds/lazer.wav");
-				//lazer.play();
-				var nShoot=[];
-				nShoot[0]=this.posX+10;
-				nShoot[1]=this.posY+10;
-				this.shoots.push(nShoot);
-				this.isShooting = true;
-				break;
-		}
-	}
 }
 
 
